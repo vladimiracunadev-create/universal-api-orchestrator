@@ -19,5 +19,5 @@ token.json
 credentials.json
 client_secret*.json
 node_modules/
-coverage.xml
-test-results.xml
+/coverage.xml
+/test-results.xml

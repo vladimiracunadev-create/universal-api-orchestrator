@@ -30,7 +30,7 @@ Versión de operación y robustez. No añade proveedores: siguen siendo 13 servi
 - `cryptography` pasa a `>=50,<51`: las versiones admitidas antes arrastraban avisos publicados (PYSEC-2026-3552/3553/3554).
 - El SOAP escapa valores con una función propia; se retira la importación de `xml.sax.saxutils`, señalada por Bandit.
 - `pyproject.toml` declara la licencia como expresión SPDX con `license-files`, URLs del proyecto, clasificadores y un conjunto mayor de reglas de lint (`W`, `I`, `UP`, `B`, `C4`, `RUF`).
-- `verify_repository.py` comprueba además coherencia de versión y recuentos entre manifiestos, catálogo y README, y codificación de los Markdown.
+- `verify_repository.py` comprueba además coherencia de versión y recuentos entre manifiestos, catálogo y README, codificación de los Markdown, y que ningún archivo enlazado desde la documentación quede excluido por `.gitignore`: un enlace puede existir en el equipo y no en el repositorio publicado.
 - `uao doctor` informa versión, modo de IA, límite de carga y si se permiten redes privadas.
 
 ### Corregido

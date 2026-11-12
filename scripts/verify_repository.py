@@ -4,6 +4,8 @@ from __future__ import annotations
 import ast
 import json
 import re
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 from urllib.parse import unquote
@@ -56,6 +58,29 @@ def mojibake() -> list[str]:
             errors.append(f"{path.relative_to(ROOT)}: codificación sospechosa")
     return errors
 
+def ignored_by_git(targets: set[Path]) -> list[str]:
+    """Un enlace puede existir en disco y no estar publicado si .gitignore lo excluye.
+
+    Es el fallo que la integración continua encontró en la primera publicación: el
+    archivo estaba en el equipo y no en el repositorio. Sin git disponible (por ejemplo
+    en un ZIP de distribución) la comprobación se omite en lugar de fallar.
+    """
+    if not (ROOT / ".git").exists() or not shutil.which("git"):
+        return []
+    relative = sorted(str(path.relative_to(ROOT).as_posix()) for path in targets)
+    if not relative:
+        return []
+    # Se escribe en binario a propósito: en Windows el modo texto convertiría cada
+    # salto en CRLF y git interpretaría el retorno de carro como parte del nombre.
+    result = subprocess.run(
+        ["git", "check-ignore", "-z", "--stdin"], cwd=ROOT,
+        input="\0".join(relative).encode("utf-8"),
+        capture_output=True, check=False,
+    )
+    reported = result.stdout.decode("utf-8", errors="replace").split("\0")
+    return [f"{name}: enlazado en la documentación pero excluido por .gitignore"
+            for name in reported if name.strip()]
+
 def main() -> None:
     errors: list[str] = []
     files = [p for p in ROOT.rglob("*") if p.is_file() and not any(x in EXCLUDED or x.endswith(".egg-info") for x in p.relative_to(ROOT).parts)]
@@ -93,6 +118,7 @@ def main() -> None:
             except (KeyError, jsonschema.ValidationError) as exc:
                 errors.append(f"{path.name}: {type(exc).__name__}")
         example_count += 1
+    linked: set[Path] = set()
     for path in files:
         if path.suffix != ".md" or "history" in path.parts:
             continue
@@ -100,8 +126,14 @@ def main() -> None:
             if "://" in target or target.startswith(("#", "mailto:")):
                 continue
             clean = unquote(target.split("#")[0])
-            if clean and not (path.parent / clean).exists():
+            if not clean:
+                continue
+            destination = (path.parent / clean).resolve()
+            if not destination.exists():
                 errors.append(f"{path.relative_to(ROOT)}: enlace inexistente {target}")
+            elif destination.is_file() and destination.is_relative_to(ROOT):
+                linked.add(destination)
+    errors.extend(ignored_by_git(linked))
     version = read_version()
     errors.extend(version_drift(version, operations, len(providers)))
     errors.extend(mojibake())

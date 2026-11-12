@@ -73,8 +73,9 @@ Además de la suite, en esta entrega se arrancó **uvicorn real en loopback** co
 - Que todos los enlaces Markdown relativos apunten a archivos existentes.
 - Que la versión coincida en `pyproject.toml`, `__init__.py`, `config/catalog.json` y el título del README; y que los recuentos de proveedores y operaciones del catálogo coincidan con `catalog.json`.
 - Que ningún Markdown tenga señales de UTF-8 leído como ANSI, excluyendo el código entre comillas invertidas.
+- Que ningún archivo enlazado desde la documentación esté excluido por `.gitignore`. Sin git disponible, la comprobación se omite.
 
-Dos de esas comprobaciones existen porque el fallo ocurrió: los recuentos se desincronizaron de la implementación, y un archivo se corrompió al editarlo con PowerShell.
+Tres de esas comprobaciones existen porque el fallo ocurrió: los recuentos se desincronizaron de la implementación, un archivo se corrompió al editarlo con PowerShell, y un archivo de evidencia enlazado desde `VALIDATION.md` quedó fuera del repositorio por un patrón de `.gitignore` demasiado amplio. Ese último lo encontró la CI en la primera publicación, cuando el verificador aún solo miraba el disco.
 
 ## Integración continua
 
