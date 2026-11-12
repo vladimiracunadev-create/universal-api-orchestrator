@@ -1,0 +1,11 @@
+{
+  "system": "teams",
+  "operation": "send_message",
+  "params": {
+    "team_id": "REEMPLAZAR",
+    "channel_id": "REEMPLAZAR",
+    "content": "Aviso de equipo."
+  },
+  "confirmed": false,
+  "idempotency_key": "CAMBIAR-POR-CLAVE-UNICA"
+}

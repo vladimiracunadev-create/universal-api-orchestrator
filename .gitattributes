@@ -1,0 +1,9 @@
+# Normaliza el final de línea: el repositorio se edita en Windows, Linux y macOS
+# y contiene scripts de shell que se rompen con CRLF.
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.png binary
+*.jpg binary
+*.pdf binary
+*.zip binary

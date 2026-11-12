@@ -1,0 +1,10 @@
+{
+  "system": "discord",
+  "operation": "send_message",
+  "params": {
+    "channel_id": "REEMPLAZAR",
+    "content": "Aviso operacional."
+  },
+  "confirmed": false,
+  "idempotency_key": "CAMBIAR-POR-CLAVE-UNICA"
+}

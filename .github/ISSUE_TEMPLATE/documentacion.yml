@@ -1,0 +1,28 @@
+name: Documentación
+description: Un documento está incompleto, confuso o afirma algo que el código no hace.
+labels: ["documentación"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Una afirmación incorrecta en la documentación se trata como defecto: la precisión es parte del producto.
+  - type: input
+    id: archivo
+    attributes:
+      label: Archivo y sección
+      placeholder: "docs/API_GUIDE.md · Escrituras, aprobación e idempotencia"
+    validations:
+      required: true
+  - type: textarea
+    id: dice
+    attributes:
+      label: Qué dice ahora
+    validations:
+      required: true
+  - type: textarea
+    id: deberia
+    attributes:
+      label: Qué debería decir, y por qué
+      description: Si el código contradice al documento, indique el archivo y la línea.
+    validations:
+      required: true

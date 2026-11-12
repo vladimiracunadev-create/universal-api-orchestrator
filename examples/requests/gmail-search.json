@@ -1,0 +1,8 @@
+{
+  "system": "gmail",
+  "operation": "list_messages",
+  "params": {
+    "q": "is:unread newer_than:7d",
+    "maxResults": 10
+  }
+}

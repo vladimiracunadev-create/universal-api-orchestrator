@@ -1,0 +1,1493 @@
+systems:
+  jsonplaceholder:
+    protocol: rest
+    base_url: https://jsonplaceholder.typicode.com
+    allowed_hosts:
+    - jsonplaceholder.typicode.com
+    operations:
+      get_post:
+        method: GET
+        path: /posts/{id}
+        response_map:
+          id: id
+          title: title
+          body: body
+        effect: read
+    description: Ejemplo de protocolo heredado; verificar contrato antes de habilitar.
+  countries_graphql_demo:
+    protocol: graphql
+    base_url: https://countries.trevorblades.com/
+    allowed_hosts:
+    - countries.trevorblades.com
+    operations:
+      country:
+        query: "query Country($code: ID!) {\n  country(code: $code) { code name capital\
+          \ currency }\n}\n"
+        response_map:
+          country: data.country
+        effect: read
+    description: Ejemplo de protocolo heredado; verificar contrato antes de habilitar.
+  jsonrpc_example:
+    protocol: jsonrpc
+    base_url: https://example.invalid/rpc
+    enabled: false
+    allowed_hosts:
+    - example.invalid
+    operations:
+      status:
+        rpc_method: system.status
+        effect: write
+    description: Ejemplo de protocolo heredado; verificar contrato antes de habilitar.
+  soap_example:
+    protocol: soap
+    base_url: https://example.invalid/service
+    enabled: false
+    allowed_hosts:
+    - example.invalid
+    operations:
+      ping:
+        soap_action: urn:Ping
+        envelope_template: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope\
+          \ xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n  <soap:Body><Ping\
+          \ xmlns=\"urn:demo\"><Message>{message}</Message></Ping></soap:Body>\n</soap:Envelope>\n"
+        effect: write
+    description: Ejemplo de protocolo heredado; verificar contrato antes de habilitar.
+  grpc_example:
+    protocol: grpc
+    base_url: localhost:50051
+    enabled: false
+    operations:
+      raw_unary:
+        grpc_method: /demo.Service/RawUnary
+        effect: write
+    allowed_hosts:
+    - localhost
+    description: Ejemplo de protocolo heredado; verificar contrato antes de habilitar.
+  gmail:
+    protocol: provider
+    provider: gmail
+    enabled: false
+    description: Correo Gmail / Google Workspace con OAuth delegado.
+    base_url: https://gmail.googleapis.com/gmail/v1
+    allowed_hosts:
+    - gmail.googleapis.com
+    auth:
+      type: oauth2
+      token_key: google
+      token_url: https://oauth2.googleapis.com/token
+      allowed_hosts:
+      - oauth2.googleapis.com
+    sensitive: true
+    operations:
+      get_profile:
+        method: GET
+        path: /users/me/profile
+        description: Leer dirección de la cuenta e identificador de historial.
+        effect: read
+        input_schema:
+          type: object
+          properties: {}
+          required: []
+          additionalProperties: false
+      list_messages:
+        method: GET
+        path: /users/me/messages
+        description: Buscar correos y paginar; devuelve IDs, no todos los cuerpos.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            q: &id001
+              type: string
+              maxLength: 5000
+            maxResults:
+              type: integer
+              minimum: 1
+              maximum: 100
+            pageToken: *id001
+            labelIds: &id005
+              type: array
+              maxItems: 100
+            includeSpamTrash: &id006
+              type: boolean
+          required: []
+          additionalProperties: false
+      get_message:
+        method: GET
+        path: /users/me/messages/{id}
+        description: Leer mensaje MIME estructurado, cabeceras y partes.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            id: &id002
+              type: string
+              minLength: 1
+              maxLength: 240
+            format:
+              enum:
+              - full
+              - metadata
+              - minimal
+              - raw
+          required:
+          - id
+          additionalProperties: false
+      get_thread:
+        method: GET
+        path: /users/me/threads/{id}
+        description: Leer un hilo de correo completo.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            id: *id002
+            format:
+              enum:
+              - full
+              - metadata
+              - minimal
+          required:
+          - id
+          additionalProperties: false
+      get_attachment:
+        method: GET
+        path: /users/me/messages/{message_id}/attachments/{id}
+        description: Obtener adjunto codificado base64url; límite del gateway 4 MB.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            message_id: *id002
+            id: *id002
+          required:
+          - message_id
+          - id
+          additionalProperties: false
+      send_message:
+        method: POST
+        path: /users/me/messages/send
+        description: Construir MIME y enviar un correo.
+        effect: write
+        input_schema:
+          type: object
+          properties: &id004
+            to: &id003
+              type: string
+              minLength: 3
+              maxLength: 254
+              pattern: ^[^\s@]+@[^\s@]+\.[^\s@]+$
+            subject:
+              type: string
+              maxLength: 998
+            text:
+              type: string
+              maxLength: 100000
+            html:
+              type: string
+              maxLength: 100000
+            from: *id003
+            cc:
+              type: string
+              maxLength: 1000
+            bcc:
+              type: string
+              maxLength: 1000
+            attachments: &id009
+              type: array
+              maxItems: 5
+              items:
+                type: object
+                required:
+                - filename
+                - data_base64
+                additionalProperties: false
+                properties:
+                  filename: *id002
+                  data_base64:
+                    type: string
+                    maxLength: 690000
+                  content_type: *id002
+            thread_id: *id002
+            in_reply_to: *id002
+            references:
+              type: string
+              maxLength: 2000
+          required:
+          - to
+          - subject
+          - text
+          additionalProperties: false
+        action: send_message
+      reply_message:
+        method: POST
+        path: /users/me/messages/send
+        description: Responder conservando threadId, Subject y cabeceras RFC.
+        effect: write
+        input_schema:
+          type: object
+          properties: *id004
+          required:
+          - to
+          - subject
+          - text
+          - thread_id
+          - in_reply_to
+          - references
+          additionalProperties: false
+        action: reply_message
+      create_draft:
+        method: POST
+        path: /users/me/drafts
+        description: Crear borrador MIME, sin enviarlo.
+        effect: write
+        input_schema:
+          type: object
+          properties: *id004
+          required:
+          - to
+          - subject
+          - text
+          additionalProperties: false
+        action: create_draft
+      list_drafts:
+        method: GET
+        path: /users/me/drafts
+        description: Listar borradores paginados.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            maxResults:
+              type: integer
+              minimum: 1
+              maximum: 100
+            pageToken: *id001
+          required: []
+          additionalProperties: false
+      send_draft:
+        method: POST
+        path: /users/me/drafts/send
+        description: Enviar borrador existente por ID.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            id: *id002
+          required:
+          - id
+          additionalProperties: false
+      list_labels:
+        method: GET
+        path: /users/me/labels
+        description: Listar etiquetas de Gmail.
+        effect: read
+        input_schema:
+          type: object
+          properties: {}
+          required: []
+          additionalProperties: false
+      modify_labels:
+        method: POST
+        path: /users/me/messages/{id}/modify
+        description: Agregar o quitar etiquetas, incluidos estados leído/no leído.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            id: *id002
+            addLabelIds: *id005
+            removeLabelIds: *id005
+          required:
+          - id
+          additionalProperties: false
+      list_history:
+        method: GET
+        path: /users/me/history
+        description: Leer cambios desde un historyId; requiere recuperación ante 404.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            startHistoryId: *id002
+            pageToken: *id001
+            maxResults:
+              type: integer
+              minimum: 1
+              maximum: 100
+            historyTypes: *id005
+            labelId: *id002
+          required:
+          - startHistoryId
+          additionalProperties: false
+      watch:
+        method: POST
+        path: /users/me/watch
+        description: Registrar observación mediante Cloud Pub/Sub previamente configurado.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            topicName: *id002
+            labelIds: *id005
+            labelFilterBehavior:
+              enum:
+              - include
+              - exclude
+          required:
+          - topicName
+          additionalProperties: false
+      stop_watch:
+        method: POST
+        path: /users/me/stop
+        description: Cancelar observación push.
+        effect: write
+        input_schema:
+          type: object
+          properties: {}
+          required: []
+          additionalProperties: false
+  whatsapp:
+    protocol: provider
+    provider: whatsapp
+    enabled: false
+    description: WhatsApp Business Platform Cloud API oficial.
+    base_url: https://graph.facebook.com/${WHATSAPP_GRAPH_VERSION}
+    allowed_hosts:
+    - graph.facebook.com
+    auth:
+      type: bearer
+      token_env: WHATSAPP_ACCESS_TOKEN
+      prefix: Bearer
+    sensitive: true
+    operations:
+      send_text:
+        method: POST
+        path: /messages
+        description: Enviar texto dentro de ventana permitida por Meta.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            to: &id007
+              type: string
+              pattern: ^[1-9][0-9]{6,14}$
+            text:
+              type: string
+              maxLength: 4096
+            preview_url: *id006
+            reply_to: *id002
+          required:
+          - to
+          - text
+          additionalProperties: false
+        action: send_text
+      send_template:
+        method: POST
+        path: /messages
+        description: Enviar plantilla aprobada y componentes.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            to: *id007
+            template_name: *id002
+            language: *id002
+            components: *id005
+            reply_to: *id002
+          required:
+          - to
+          - template_name
+          - language
+          additionalProperties: false
+        action: send_template
+      send_media:
+        method: POST
+        path: /messages
+        description: Enviar imagen/audio/video/documento por ID o enlace HTTPS.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            to: *id007
+            media_type:
+              enum:
+              - image
+              - audio
+              - video
+              - document
+              - sticker
+            media:
+              type: object
+              properties:
+                id: *id002
+                link:
+                  type: string
+                  pattern: ^https://
+                caption:
+                  type: string
+                  maxLength: 1024
+                filename: *id002
+              additionalProperties: false
+              oneOf:
+              - required:
+                - id
+                not:
+                  required:
+                  - link
+              - required:
+                - link
+                not:
+                  required:
+                  - id
+            reply_to: *id002
+          required:
+          - to
+          - media_type
+          - media
+          additionalProperties: false
+        action: send_media
+      send_interactive:
+        method: POST
+        path: /messages
+        description: Enviar objeto interactivo oficial (botones/listas).
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            to: *id007
+            interactive: &id012
+              type: object
+            reply_to: *id002
+          required:
+          - to
+          - interactive
+          additionalProperties: false
+        action: send_interactive
+      mark_read:
+        method: POST
+        path: /messages
+        description: Marcar mensaje recibido como leído.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            message_id: *id002
+          required:
+          - message_id
+          additionalProperties: false
+        action: mark_read
+      upload_media:
+        method: POST
+        path: /media
+        description: Subir archivo base64; límite local 512 KB.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            filename: *id002
+            content_type: *id002
+            data_base64:
+              type: string
+              maxLength: 690000
+          required:
+          - filename
+          - content_type
+          - data_base64
+          additionalProperties: false
+        action: upload_media
+      get_media_metadata:
+        method: GET
+        path: /{media_id}
+        description: Consultar metadata y URL temporal de media; no descarga arbitraria.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            media_id: *id002
+          required:
+          - media_id
+          additionalProperties: false
+      get_business_profile:
+        method: GET
+        path: /${WHATSAPP_PHONE_NUMBER_ID}/whatsapp_business_profile
+        description: Leer perfil de negocio.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            fields: *id001
+          required: []
+          additionalProperties: false
+        defaults:
+          fields: about,address,description,email,websites,vertical
+      list_templates:
+        method: GET
+        path: /{waba_id}/message_templates
+        description: Listar plantillas de la WABA autorizada.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            waba_id: *id002
+            limit:
+              type: integer
+              minimum: 1
+              maximum: 100
+            after: *id001
+          required:
+          - waba_id
+          additionalProperties: false
+    phone_number_id: ${WHATSAPP_PHONE_NUMBER_ID}
+    webhook:
+      type: meta
+      secret_env: WHATSAPP_APP_SECRET
+      verify_token_env: WHATSAPP_VERIFY_TOKEN
+  outlook:
+    protocol: provider
+    provider: outlook
+    enabled: false
+    description: Outlook / Microsoft 365 mediante Graph delegado.
+    base_url: https://graph.microsoft.com/v1.0
+    allowed_hosts:
+    - graph.microsoft.com
+    auth:
+      type: msal
+      token_key: microsoft
+      client_id_env: MICROSOFT_CLIENT_ID
+      authority: https://login.microsoftonline.com/${MICROSOFT_TENANT_ID}
+      scopes:
+      - User.Read
+      - Mail.ReadWrite
+      - Mail.Send
+    sensitive: true
+    operations:
+      get_profile:
+        method: GET
+        path: /me
+        description: Consultar perfil del usuario autorizado.
+        effect: read
+        input_schema:
+          type: object
+          properties: {}
+          required: []
+          additionalProperties: false
+      list_messages:
+        method: GET
+        path: /me/messages
+        description: Listar o filtrar correos mediante OData.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            $top:
+              type: integer
+              minimum: 1
+              maximum: 100
+            $filter: *id001
+            $select: *id001
+            $skip: &id011
+              type: integer
+              minimum: 0
+            $search: *id001
+            $orderby: *id001
+          required: []
+          additionalProperties: false
+      get_message:
+        method: GET
+        path: /me/messages/{id}
+        description: Leer correo.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            id: *id002
+            $select: *id001
+          required:
+          - id
+          additionalProperties: false
+      list_attachments:
+        method: GET
+        path: /me/messages/{id}/attachments
+        description: Listar adjuntos pequeños en la respuesta.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            id: *id002
+          required:
+          - id
+          additionalProperties: false
+      send_mail:
+        method: POST
+        path: /me/sendMail
+        description: Enviar correo; 202 significa aceptado, no entregado.
+        effect: write
+        input_schema:
+          type: object
+          properties: &id010
+            to: &id008
+              type: array
+              minItems: 1
+              maxItems: 20
+              items: *id003
+            subject:
+              type: string
+              maxLength: 998
+            body:
+              type: string
+              maxLength: 100000
+            content_type:
+              enum:
+              - Text
+              - HTML
+            cc: *id008
+            bcc: *id008
+            attachments: *id009
+          required:
+          - to
+          - subject
+          - body
+          additionalProperties: false
+        action: send_mail
+      create_draft:
+        method: POST
+        path: /me/messages
+        description: Crear borrador sin enviarlo.
+        effect: write
+        input_schema:
+          type: object
+          properties: *id010
+          required:
+          - to
+          - subject
+          - body
+          additionalProperties: false
+        action: create_draft
+      send_draft:
+        method: POST
+        path: /me/messages/{id}/send
+        description: Enviar borrador existente.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            id: *id002
+          required:
+          - id
+          additionalProperties: false
+      reply_message:
+        method: POST
+        path: /me/messages/{id}/reply
+        description: Responder en el hilo de Microsoft Graph.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            id: *id002
+            comment:
+              type: string
+              maxLength: 100000
+          required:
+          - id
+          - comment
+          additionalProperties: false
+      list_folders:
+        method: GET
+        path: /me/mailFolders
+        description: Listar carpetas de correo.
+        effect: read
+        input_schema:
+          type: object
+          properties: {}
+          required: []
+          additionalProperties: false
+  telegram:
+    protocol: provider
+    provider: telegram
+    enabled: false
+    description: Telegram Bot API; no automatización de cuentas personales.
+    base_url: https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}
+    allowed_hosts:
+    - api.telegram.org
+    auth:
+      type: none
+    sensitive: true
+    operations:
+      get_me:
+        method: GET
+        path: /getMe
+        description: Verificar identidad del bot.
+        effect: read
+        input_schema:
+          type: object
+          properties: {}
+          required: []
+          additionalProperties: false
+      get_updates:
+        method: POST
+        path: /getUpdates
+        description: Polling y confirmación por offset; no combinar con webhook.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            offset: *id011
+            limit:
+              type: integer
+              minimum: 1
+              maximum: 100
+            timeout:
+              type: integer
+              minimum: 0
+              maximum: 10
+          required: []
+          additionalProperties: false
+      send_message:
+        method: POST
+        path: /sendMessage
+        description: Enviar texto al chat autorizado.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            chat_id:
+              type:
+              - string
+              - integer
+            text:
+              type: string
+              maxLength: 4096
+            parse_mode:
+              enum:
+              - HTML
+              - MarkdownV2
+            reply_parameters: *id012
+            disable_notification: *id006
+          required:
+          - chat_id
+          - text
+          additionalProperties: false
+      send_photo:
+        method: POST
+        path: /sendPhoto
+        description: Enviar fotografía por file_id o enlace público.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            chat_id:
+              type:
+              - string
+              - integer
+            photo: *id001
+            caption:
+              type: string
+              maxLength: 1024
+          required:
+          - chat_id
+          - photo
+          additionalProperties: false
+      get_webhook_info:
+        method: GET
+        path: /getWebhookInfo
+        description: Consultar estado del webhook.
+        effect: read
+        input_schema:
+          type: object
+          properties: {}
+          required: []
+          additionalProperties: false
+      set_webhook:
+        method: POST
+        path: /setWebhook
+        description: Registrar HTTPS y secreto del webhook.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            url:
+              type: string
+              pattern: ^https://
+            secret_token:
+              type: string
+              minLength: 16
+              maxLength: 256
+              pattern: ^[A-Za-z0-9_-]+$
+            allowed_updates: *id005
+          required:
+          - url
+          - secret_token
+          additionalProperties: false
+      delete_webhook:
+        method: POST
+        path: /deleteWebhook
+        description: Quitar webhook para usar polling.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            drop_pending_updates: *id006
+          required: []
+          additionalProperties: false
+    webhook:
+      type: telegram
+      secret_env: TELEGRAM_WEBHOOK_SECRET
+  slack:
+    protocol: provider
+    provider: slack
+    enabled: false
+    description: Slack Web API y Events API autenticada.
+    base_url: https://slack.com/api
+    allowed_hosts:
+    - slack.com
+    auth:
+      type: bearer
+      token_env: SLACK_BOT_TOKEN
+      prefix: Bearer
+    sensitive: true
+    operations:
+      auth_test:
+        method: POST
+        path: /auth.test
+        description: Verificar token e identidad de workspace.
+        effect: read
+        input_schema:
+          type: object
+          properties: {}
+          required: []
+          additionalProperties: false
+      list_channels:
+        method: GET
+        path: /conversations.list
+        description: Listar canales visibles al bot.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            cursor: *id001
+            limit:
+              type: integer
+              minimum: 1
+              maximum: 100
+            types: *id001
+          required: []
+          additionalProperties: false
+      history:
+        method: GET
+        path: /conversations.history
+        description: Leer historial visible y paginado.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            channel: *id002
+            cursor: *id001
+            limit:
+              type: integer
+              minimum: 1
+              maximum: 100
+            oldest: *id001
+          required:
+          - channel
+          additionalProperties: false
+      replies:
+        method: GET
+        path: /conversations.replies
+        description: Leer respuestas de un hilo autorizado.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            channel: *id002
+            ts: *id002
+            cursor: *id001
+            limit:
+              type: integer
+              minimum: 1
+              maximum: 100
+          required:
+          - channel
+          - ts
+          additionalProperties: false
+      send_message:
+        method: POST
+        path: /chat.postMessage
+        description: Publicar texto y opcionalmente responder en hilo.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            channel: *id002
+            text:
+              type: string
+              maxLength: 4000
+            thread_ts: *id001
+            blocks: *id005
+            unfurl_links: *id006
+          required:
+          - channel
+          - text
+          additionalProperties: false
+      update_message:
+        method: POST
+        path: /chat.update
+        description: Actualizar mensaje del bot.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            channel: *id002
+            ts: *id002
+            text:
+              type: string
+              maxLength: 4000
+          required:
+          - channel
+          - ts
+          - text
+          additionalProperties: false
+    webhook:
+      type: slack
+      secret_env: SLACK_SIGNING_SECRET
+  discord:
+    protocol: provider
+    provider: discord
+    enabled: false
+    description: Discord REST con bot; Gateway WebSocket no implementado.
+    base_url: https://discord.com/api/v10
+    allowed_hosts:
+    - discord.com
+    auth:
+      type: bearer
+      token_env: DISCORD_BOT_TOKEN
+      prefix: Bot
+    sensitive: true
+    operations:
+      get_me:
+        method: GET
+        path: /users/@me
+        description: Verificar cuenta del bot.
+        effect: read
+        input_schema:
+          type: object
+          properties: {}
+          required: []
+          additionalProperties: false
+      list_messages:
+        method: GET
+        path: /channels/{channel_id}/messages
+        description: Leer mensajes según permisos e intents.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            channel_id: *id002
+            limit:
+              type: integer
+              minimum: 1
+              maximum: 100
+            before: *id002
+            after: *id002
+          required:
+          - channel_id
+          additionalProperties: false
+      send_message:
+        method: POST
+        path: /channels/{channel_id}/messages
+        description: Enviar mensaje sin menciones automáticas.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            channel_id: *id002
+            content:
+              type: string
+              maxLength: 2000
+            message_reference: *id012
+          required:
+          - channel_id
+          - content
+          additionalProperties: false
+        body_template:
+          content: '@content'
+          allowed_mentions:
+            parse: []
+          message_reference: '@message_reference'
+        defaults:
+          message_reference: {}
+      edit_message:
+        method: PATCH
+        path: /channels/{channel_id}/messages/{message_id}
+        description: Editar mensaje existente.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            channel_id: *id002
+            message_id: *id002
+            content:
+              type: string
+              maxLength: 2000
+          required:
+          - channel_id
+          - message_id
+          - content
+          additionalProperties: false
+        body_template:
+          content: '@content'
+          allowed_mentions:
+            parse: []
+  twilio:
+    protocol: provider
+    provider: twilio
+    enabled: false
+    description: Twilio Messaging API; callbacks de entrega no implementados.
+    base_url: https://api.twilio.com/2010-04-01
+    allowed_hosts:
+    - api.twilio.com
+    auth:
+      type: basic
+      username_env: TWILIO_ACCOUNT_SID
+      password_env: TWILIO_AUTH_TOKEN
+    sensitive: true
+    operations:
+      send_message:
+        method: POST
+        path: /Accounts/${TWILIO_ACCOUNT_SID}/Messages.json
+        description: Enviar SMS o WhatsApp con remitente aprobado.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            to: *id001
+            from: *id001
+            body:
+              type: string
+              maxLength: 1600
+          required:
+          - to
+          - from
+          - body
+          additionalProperties: false
+        form_template:
+          To: '@to'
+          From: '@from'
+          Body: '@body'
+      get_message:
+        method: GET
+        path: /Accounts/${TWILIO_ACCOUNT_SID}/Messages/{sid}.json
+        description: Consultar estado de mensaje Twilio.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            sid: *id002
+          required:
+          - sid
+          additionalProperties: false
+      list_messages:
+        method: GET
+        path: /Accounts/${TWILIO_ACCOUNT_SID}/Messages.json
+        description: Listar mensajes por filtros.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            To: *id001
+            From: *id001
+            PageSize:
+              type: integer
+              minimum: 1
+              maximum: 100
+            PageToken: *id001
+          required: []
+          additionalProperties: false
+  sendgrid:
+    protocol: provider
+    provider: sendgrid
+    enabled: false
+    description: SendGrid Mail Send.
+    base_url: https://api.sendgrid.com/v3
+    allowed_hosts:
+    - api.sendgrid.com
+    auth:
+      type: bearer
+      token_env: SENDGRID_API_KEY
+      prefix: Bearer
+    sensitive: true
+    operations:
+      send_mail:
+        method: POST
+        path: /mail/send
+        description: Enviar correo transaccional con remitente verificado.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            from_email: *id003
+            to_email: *id003
+            subject:
+              type: string
+              maxLength: 998
+            text:
+              type: string
+              maxLength: 100000
+          required:
+          - from_email
+          - to_email
+          - subject
+          - text
+          additionalProperties: false
+        body_template:
+          personalizations:
+          - to:
+            - email: '@to_email'
+          from:
+            email: '@from_email'
+          subject: '@subject'
+          content:
+          - type: text/plain
+            value: '@text'
+  resend:
+    protocol: provider
+    provider: resend
+    enabled: false
+    description: Resend envío y consulta de correo.
+    base_url: https://api.resend.com
+    allowed_hosts:
+    - api.resend.com
+    auth:
+      type: bearer
+      token_env: RESEND_API_KEY
+      prefix: Bearer
+    sensitive: true
+    operations:
+      send_mail:
+        method: POST
+        path: /emails
+        description: Enviar correo transaccional.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            from: *id001
+            to: *id008
+            subject:
+              type: string
+              maxLength: 998
+            text:
+              type: string
+              maxLength: 100000
+            html:
+              type: string
+              maxLength: 100000
+          required:
+          - from
+          - to
+          - subject
+          - text
+          additionalProperties: false
+      get_email:
+        method: GET
+        path: /emails/{id}
+        description: Consultar correo por identificador.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            id: *id002
+          required:
+          - id
+          additionalProperties: false
+  google_calendar:
+    protocol: provider
+    provider: google_calendar
+    enabled: false
+    description: Google Calendar con consentimiento independiente.
+    base_url: https://www.googleapis.com/calendar/v3
+    allowed_hosts:
+    - www.googleapis.com
+    auth:
+      type: oauth2
+      token_key: google_calendar
+      token_url: https://oauth2.googleapis.com/token
+      allowed_hosts:
+      - oauth2.googleapis.com
+    sensitive: true
+    operations:
+      list_events:
+        method: GET
+        path: /calendars/{calendar_id}/events
+        description: Consultar agenda y paginar.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            calendar_id: *id002
+            timeMin: *id001
+            timeMax: *id001
+            maxResults:
+              type: integer
+              minimum: 1
+              maximum: 100
+            pageToken: *id001
+            singleEvents: *id006
+            orderBy: *id001
+          required:
+          - calendar_id
+          additionalProperties: false
+      get_event:
+        method: GET
+        path: /calendars/{calendar_id}/events/{event_id}
+        description: Leer evento.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            calendar_id: *id002
+            event_id: *id002
+          required:
+          - calendar_id
+          - event_id
+          additionalProperties: false
+      create_event:
+        method: POST
+        path: /calendars/{calendar_id}/events
+        description: Crear evento con fechas RFC3339 y zonas horarias.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            calendar_id: *id002
+            event: *id012
+          required:
+          - calendar_id
+          - event
+          additionalProperties: false
+        body_template: '@event'
+  google_drive:
+    protocol: provider
+    provider: google_drive
+    enabled: false
+    description: 'Google Drive: búsqueda y exportación de texto.'
+    base_url: https://www.googleapis.com/drive/v3
+    allowed_hosts:
+    - www.googleapis.com
+    auth:
+      type: oauth2
+      token_key: google_drive
+      token_url: https://oauth2.googleapis.com/token
+      allowed_hosts:
+      - oauth2.googleapis.com
+    sensitive: true
+    operations:
+      list_files:
+        method: GET
+        path: /files
+        description: Buscar metadata de archivos, no todos sus contenidos.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            q: *id001
+            pageSize:
+              type: integer
+              minimum: 1
+              maximum: 100
+            pageToken: *id001
+            fields: *id001
+            spaces: *id001
+          required: []
+          additionalProperties: false
+      get_file:
+        method: GET
+        path: /files/{file_id}
+        description: Obtener metadata de archivo.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            file_id: *id002
+            fields: *id001
+          required:
+          - file_id
+          additionalProperties: false
+      export_text:
+        method: GET
+        path: /files/{file_id}/export
+        description: Exportar documento compatible a texto plano.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            file_id: *id002
+          required:
+          - file_id
+          additionalProperties: false
+        query_template:
+          mimeType: text/plain
+  teams:
+    protocol: provider
+    provider: teams
+    enabled: false
+    description: Microsoft Teams por Graph delegado, sujeto a políticas del tenant.
+    base_url: https://graph.microsoft.com/v1.0
+    allowed_hosts:
+    - graph.microsoft.com
+    auth:
+      type: msal
+      token_key: microsoft
+      client_id_env: MICROSOFT_CLIENT_ID
+      authority: https://login.microsoftonline.com/${MICROSOFT_TENANT_ID}
+      scopes:
+      - User.Read
+      - Team.ReadBasic.All
+      - Channel.ReadBasic.All
+      - ChannelMessage.Read.All
+      - ChannelMessage.Send
+    sensitive: true
+    operations:
+      joined_teams:
+        method: GET
+        path: /me/joinedTeams
+        description: Listar equipos del usuario autorizado.
+        effect: read
+        input_schema:
+          type: object
+          properties: {}
+          required: []
+          additionalProperties: false
+      list_channels:
+        method: GET
+        path: /teams/{team_id}/channels
+        description: Listar canales del equipo.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            team_id: *id002
+          required:
+          - team_id
+          additionalProperties: false
+      list_messages:
+        method: GET
+        path: /teams/{team_id}/channels/{channel_id}/messages
+        description: Leer mensajes de canal permitidos.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            team_id: *id002
+            channel_id: *id002
+            $top:
+              type: integer
+              minimum: 1
+              maximum: 50
+          required:
+          - team_id
+          - channel_id
+          additionalProperties: false
+      send_message:
+        method: POST
+        path: /teams/{team_id}/channels/{channel_id}/messages
+        description: Publicar mensaje con autorización delegada.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            team_id: *id002
+            channel_id: *id002
+            content:
+              type: string
+              maxLength: 10000
+          required:
+          - team_id
+          - channel_id
+          - content
+          additionalProperties: false
+        body_template:
+          body:
+            contentType: text
+            content: '@content'
+  github:
+    protocol: provider
+    provider: github
+    enabled: false
+    description: 'GitHub REST: repositorios y tickets.'
+    base_url: https://api.github.com
+    allowed_hosts:
+    - api.github.com
+    auth:
+      type: bearer
+      token_env: GITHUB_TOKEN
+      prefix: Bearer
+    sensitive: true
+    operations:
+      get_repo:
+        method: GET
+        path: /repos/{owner}/{repo}
+        description: Consultar metadata del repositorio.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            owner: *id002
+            repo: *id002
+          required:
+          - owner
+          - repo
+          additionalProperties: false
+      list_issues:
+        method: GET
+        path: /repos/{owner}/{repo}/issues
+        description: Listar issues y paginar.
+        effect: read
+        input_schema:
+          type: object
+          properties:
+            owner: *id002
+            repo: *id002
+            state:
+              enum:
+              - open
+              - closed
+              - all
+            page:
+              type: integer
+              minimum: 1
+            per_page:
+              type: integer
+              minimum: 1
+              maximum: 100
+          required:
+          - owner
+          - repo
+          additionalProperties: false
+      create_issue:
+        method: POST
+        path: /repos/{owner}/{repo}/issues
+        description: Crear ticket con autorización explícita.
+        effect: write
+        input_schema:
+          type: object
+          properties:
+            owner: *id002
+            repo: *id002
+            title:
+              type: string
+              maxLength: 256
+            body:
+              type: string
+              maxLength: 65000
+          required:
+          - owner
+          - repo
+          - title
+          additionalProperties: false
+    headers:
+      Accept: application/vnd.github+json
+      X-GitHub-Api-Version: '2022-11-28'
+    webhook:
+      type: github
+      secret_env: GITHUB_WEBHOOK_SECRET

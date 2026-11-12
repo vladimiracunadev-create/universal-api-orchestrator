@@ -1,0 +1,23 @@
+{
+  "question": "Resume las consultas pendientes y la agenda usando solo estas fuentes. Distingue datos ausentes.",
+  "requests": [
+    {
+      "alias": "correos",
+      "system": "gmail",
+      "operation": "list_messages",
+      "params": {
+        "q": "is:unread",
+        "maxResults": 5
+      }
+    },
+    {
+      "alias": "agenda",
+      "system": "google_calendar",
+      "operation": "list_events",
+      "params": {
+        "calendar_id": "primary",
+        "maxResults": 5
+      }
+    }
+  ]
+}

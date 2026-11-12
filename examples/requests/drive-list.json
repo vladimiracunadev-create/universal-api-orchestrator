@@ -1,0 +1,8 @@
+{
+  "system": "google_drive",
+  "operation": "list_files",
+  "params": {
+    "pageSize": 10,
+    "fields": "files(id,name),nextPageToken"
+  }
+}

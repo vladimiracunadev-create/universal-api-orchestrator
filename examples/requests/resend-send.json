@@ -1,0 +1,14 @@
+{
+  "system": "resend",
+  "operation": "send_mail",
+  "params": {
+    "from": "remitente@example.com",
+    "to": [
+      "cliente@example.com"
+    ],
+    "subject": "Aviso",
+    "text": "Mensaje revisado."
+  },
+  "confirmed": false,
+  "idempotency_key": "CAMBIAR-POR-CLAVE-UNICA"
+}

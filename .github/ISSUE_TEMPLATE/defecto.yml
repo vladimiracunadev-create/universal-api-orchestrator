@@ -1,0 +1,76 @@
+name: Defecto
+description: Algo falla o no coincide con lo documentado.
+labels: ["defecto"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        No pegue tokens, direcciones de correo reales, números de teléfono ni contenidos de buzones.
+        Si cree que es una vulnerabilidad, no siga aquí: use el aviso privado de seguridad.
+  - type: input
+    id: version
+    attributes:
+      label: Versión
+      description: La imprime `uao doctor`.
+      placeholder: "0.3.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Sistema operativo
+      options: [Linux, Windows, macOS, Contenedor, Otro]
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Versión de Python
+      placeholder: "3.12.9"
+    validations:
+      required: true
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos para reproducir
+      description: Comando exacto y petición usada, con los datos sensibles sustituidos.
+      placeholder: |
+        1. uao enable gmail && uao reload
+        2. uao execute mi-peticion.json
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: observado
+    attributes:
+      label: Resultado observado
+      description: Respuesta completa, incluido `error`, `status_code` y `meta`.
+      render: json
+    validations:
+      required: true
+  - type: input
+    id: trace
+    attributes:
+      label: X-Request-Id o trace_id
+      description: Permite correlacionar con los registros sin volcar credenciales.
+  - type: textarea
+    id: verificacion
+    attributes:
+      label: Salida de las comprobaciones
+      description: Resultado de `python -m pytest -q` y `python scripts/verify_repository.py`.
+      render: text
+  - type: checkboxes
+    id: confirmaciones
+    attributes:
+      label: Confirmaciones
+      options:
+        - label: Revisé TROUBLESHOOTING y el código de error no está explicado allí, o lo está pero el comportamiento difiere.
+          required: true
+        - label: El informe no contiene credenciales ni datos personales de terceros.
+          required: true

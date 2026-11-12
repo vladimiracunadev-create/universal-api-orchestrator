@@ -1,0 +1,19 @@
+{
+  "version": "0.3.0",
+  "providers": [
+    "gmail",
+    "whatsapp",
+    "outlook",
+    "telegram",
+    "slack",
+    "discord",
+    "twilio",
+    "sendgrid",
+    "resend",
+    "google_calendar",
+    "google_drive",
+    "teams",
+    "github"
+  ],
+  "operations": 69
+}

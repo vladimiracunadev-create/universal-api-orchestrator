@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.os }} · Python ${{ matrix.python }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ['3.11', '3.12', '3.13']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - name: Install package and quality tools
+        run: python -m pip install -e ".[auth,dev]"
+      - name: Static checks
+        run: python -m ruff check src tests tools scripts
+      - name: Unit and contract tests
+        run: python -m pytest --cov=universal_api_orchestrator --cov-report=xml --junitxml=test-results.xml
+      - name: Repository coherence
+        run: python scripts/verify_repository.py
+      - name: Upload results
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        if: always()
+        with:
+          name: results-${{ matrix.os }}-${{ matrix.python }}
+          path: |
+            test-results.xml
+            coverage.xml
+
+  package:
+    name: Wheel and CLI smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+          cache: pip
+      - name: Build distributions
+        run: python -m pip install build && python -m build
+      - name: Install wheel and inspect the catalog without credentials
+        run: |
+          python -m pip install dist/*.whl
+          cp -r config "$RUNNER_TEMP/config"
+          cd "$RUNNER_TEMP"
+          uao catalog > /dev/null
+          uao doctor
+          python -c "import universal_api_orchestrator as uao; print(uao.__version__)"
+
+  docs:
+    name: Markdown lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Lint Markdown with the repository configuration
+        uses: DavidAnson/markdownlint-cli2-action@913db5cf77ef624b914090bad9e1615f7f6e099d # v25.0.0
+
+  container:
+    name: Container build and health check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build image
+        run: docker build -t universal-api-orchestrator:ci .
+      - name: Start the service with ephemeral keys and probe health
+        run: |
+          # Una clave Fernet es base64 url-safe de 32 bytes: no hace falta instalar nada.
+          docker run -d --name uao-ci -p 127.0.0.1:8080:8080 \
+            -e GATEWAY_API_KEY="$(python -c 'import secrets;print(secrets.token_urlsafe(32))')" \
+            -e APPROVAL_API_KEY="$(python -c 'import secrets;print(secrets.token_urlsafe(32))')" \
+            -e STATE_KEY="$(python -c 'import base64,os;print(base64.urlsafe_b64encode(os.urandom(32)).decode())')" \
+            universal-api-orchestrator:ci
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8080/health | grep -q '"status":"ok"'; then
+              echo "health ok"; exit 0
+            fi
+            sleep 2
+          done
+          echo "el servicio no respondió"; docker logs uao-ci; exit 1
+      - name: Stop the container
+        if: always()
+        run: docker rm -f uao-ci || true

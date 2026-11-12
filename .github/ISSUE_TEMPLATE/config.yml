@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Reportar una vulnerabilidad
+    url: https://github.com/vladimiracunadev-create/universal-api-orchestrator/security/advisories/new
+    about: No abra una incidencia pública. Use el aviso privado de seguridad.
+  - name: Problemas frecuentes y códigos de error
+    url: https://github.com/vladimiracunadev-create/universal-api-orchestrator/blob/main/docs/TROUBLESHOOTING.md
+    about: Cada código de error del gateway está documentado con su causa.
+  - name: Cómo pedir soporte
+    url: https://github.com/vladimiracunadev-create/universal-api-orchestrator/blob/main/SUPPORT.md
+    about: Qué cubre el proyecto y qué datos incluir en el informe.

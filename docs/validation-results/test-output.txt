@@ -1,0 +1,45 @@
+﻿........................................................................ [ 44%]
+........................................................................ [ 88%]
+..................                                                       [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\dev\universal-api-orchestrator\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.12.9-final-0 _______________
+
+Name                                                        Stmts   Miss  Cover
+-------------------------------------------------------------------------------
+src\universal_api_orchestrator\__init__.py                      1      0   100%
+src\universal_api_orchestrator\adapters\__init__.py             7      0   100%
+src\universal_api_orchestrator\adapters\base.py                 3      0   100%
+src\universal_api_orchestrator\adapters\graphql.py              9      4    56%
+src\universal_api_orchestrator\adapters\grpc_adapter.py        25     16    36%
+src\universal_api_orchestrator\adapters\jsonrpc.py             12      6    50%
+src\universal_api_orchestrator\adapters\provider.py            14      0   100%
+src\universal_api_orchestrator\adapters\rest.py                 7      0   100%
+src\universal_api_orchestrator\adapters\soap.py                33     24    27%
+src\universal_api_orchestrator\auth.py                         85     31    64%
+src\universal_api_orchestrator\cli.py                         136    136     0%
+src\universal_api_orchestrator\config.py                       35      0   100%
+src\universal_api_orchestrator\connectors\__init__.py           0      0   100%
+src\universal_api_orchestrator\connectors\builders.py         121      8    93%
+src\universal_api_orchestrator\connectors\mail_content.py      96     10    90%
+src\universal_api_orchestrator\errors.py                        4      0   100%
+src\universal_api_orchestrator\main.py                        125      5    96%
+src\universal_api_orchestrator\models.py                       47      1    98%
+src\universal_api_orchestrator\normalizer.py                    6      0   100%
+src\universal_api_orchestrator\orchestrator.py                 96     20    79%
+src\universal_api_orchestrator\ratelimit.py                    30      0   100%
+src\universal_api_orchestrator\registry.py                     68      3    96%
+src\universal_api_orchestrator\response_engine.py              46      6    87%
+src\universal_api_orchestrator\security.py                     29      1    97%
+src\universal_api_orchestrator\store.py                       101      5    95%
+src\universal_api_orchestrator\transport.py                    67     11    84%
+src\universal_api_orchestrator\webhooks.py                     74     15    80%
+-------------------------------------------------------------------------------
+TOTAL                                                        1277    302    76%
+Coverage JSON written to file docs/validation-results/coverage.json
+162 passed, 1 warning in 10.13s

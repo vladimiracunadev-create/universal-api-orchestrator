@@ -1,0 +1,11 @@
+{
+  "system": "whatsapp",
+  "operation": "send_template",
+  "params": {
+    "to": "56900000000",
+    "template_name": "hello_world",
+    "language": "en_US"
+  },
+  "confirmed": false,
+  "idempotency_key": "CAMBIAR-POR-CLAVE-UNICA"
+}

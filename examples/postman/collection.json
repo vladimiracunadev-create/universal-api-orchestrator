@@ -1,0 +1,465 @@
+{
+  "info": {
+    "name": "Universal API Orchestrator v0.2",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Usa credenciales locales. Los envíos requieren confirmed=true y aprobación separada."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8080"
+    },
+    {
+      "key": "gatewayKey",
+      "value": ""
+    },
+    {
+      "key": "approvalKey",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "gmail-search",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"gmail\",\n  \"operation\": \"list_messages\",\n  \"params\": {\n    \"q\": \"is:unread newer_than:7d\",\n    \"maxResults\": 10\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "gmail-send",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"gmail\",\n  \"operation\": \"send_message\",\n  \"params\": {\n    \"to\": \"cliente@example.com\",\n    \"subject\": \"Respuesta a su consulta\",\n    \"text\": \"Contenido que debe revisar antes de enviar.\"\n  },\n  \"confirmed\": false,\n  \"idempotency_key\": \"CAMBIAR-POR-CLAVE-UNICA\"\n}"
+        }
+      }
+    },
+    {
+      "name": "gmail-draft",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"gmail\",\n  \"operation\": \"create_draft\",\n  \"params\": {\n    \"to\": \"cliente@example.com\",\n    \"subject\": \"Propuesta\",\n    \"text\": \"Borrador de propuesta.\"\n  },\n  \"confirmed\": false,\n  \"idempotency_key\": \"CAMBIAR-POR-CLAVE-UNICA\"\n}"
+        }
+      }
+    },
+    {
+      "name": "whatsapp-template",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"whatsapp\",\n  \"operation\": \"send_template\",\n  \"params\": {\n    \"to\": \"56900000000\",\n    \"template_name\": \"hello_world\",\n    \"language\": \"en_US\"\n  },\n  \"confirmed\": false,\n  \"idempotency_key\": \"CAMBIAR-POR-CLAVE-UNICA\"\n}"
+        }
+      }
+    },
+    {
+      "name": "whatsapp-text",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"whatsapp\",\n  \"operation\": \"send_text\",\n  \"params\": {\n    \"to\": \"56900000000\",\n    \"text\": \"Mensaje revisado por el operador.\"\n  },\n  \"confirmed\": false,\n  \"idempotency_key\": \"CAMBIAR-POR-CLAVE-UNICA\"\n}"
+        }
+      }
+    },
+    {
+      "name": "outlook-send",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"outlook\",\n  \"operation\": \"send_mail\",\n  \"params\": {\n    \"to\": [\n      \"cliente@example.com\"\n    ],\n    \"subject\": \"Seguimiento\",\n    \"body\": \"Texto revisado.\"\n  },\n  \"confirmed\": false,\n  \"idempotency_key\": \"CAMBIAR-POR-CLAVE-UNICA\"\n}"
+        }
+      }
+    },
+    {
+      "name": "outlook-list",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"outlook\",\n  \"operation\": \"list_messages\",\n  \"params\": {\n    \"$top\": 5,\n    \"$select\": \"id,subject,from\"\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "slack-send",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"slack\",\n  \"operation\": \"send_message\",\n  \"params\": {\n    \"channel\": \"C_REEMPLAZAR\",\n    \"text\": \"Aviso operacional.\"\n  },\n  \"confirmed\": false,\n  \"idempotency_key\": \"CAMBIAR-POR-CLAVE-UNICA\"\n}"
+        }
+      }
+    },
+    {
+      "name": "telegram-send",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"telegram\",\n  \"operation\": \"send_message\",\n  \"params\": {\n    \"chat_id\": \"REEMPLAZAR\",\n    \"text\": \"Aviso operacional.\"\n  },\n  \"confirmed\": false,\n  \"idempotency_key\": \"CAMBIAR-POR-CLAVE-UNICA\"\n}"
+        }
+      }
+    },
+    {
+      "name": "discord-send",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"discord\",\n  \"operation\": \"send_message\",\n  \"params\": {\n    \"channel_id\": \"REEMPLAZAR\",\n    \"content\": \"Aviso operacional.\"\n  },\n  \"confirmed\": false,\n  \"idempotency_key\": \"CAMBIAR-POR-CLAVE-UNICA\"\n}"
+        }
+      }
+    },
+    {
+      "name": "twilio-send",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"twilio\",\n  \"operation\": \"send_message\",\n  \"params\": {\n    \"to\": \"+56900000000\",\n    \"from\": \"+10000000000\",\n    \"body\": \"Mensaje de prueba autorizado.\"\n  },\n  \"confirmed\": false,\n  \"idempotency_key\": \"CAMBIAR-POR-CLAVE-UNICA\"\n}"
+        }
+      }
+    },
+    {
+      "name": "sendgrid-send",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"sendgrid\",\n  \"operation\": \"send_mail\",\n  \"params\": {\n    \"from_email\": \"remitente@example.com\",\n    \"to_email\": \"cliente@example.com\",\n    \"subject\": \"Aviso\",\n    \"text\": \"Mensaje revisado.\"\n  },\n  \"confirmed\": false,\n  \"idempotency_key\": \"CAMBIAR-POR-CLAVE-UNICA\"\n}"
+        }
+      }
+    },
+    {
+      "name": "resend-send",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"resend\",\n  \"operation\": \"send_mail\",\n  \"params\": {\n    \"from\": \"remitente@example.com\",\n    \"to\": [\n      \"cliente@example.com\"\n    ],\n    \"subject\": \"Aviso\",\n    \"text\": \"Mensaje revisado.\"\n  },\n  \"confirmed\": false,\n  \"idempotency_key\": \"CAMBIAR-POR-CLAVE-UNICA\"\n}"
+        }
+      }
+    },
+    {
+      "name": "calendar-list",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"google_calendar\",\n  \"operation\": \"list_events\",\n  \"params\": {\n    \"calendar_id\": \"primary\",\n    \"maxResults\": 10\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "drive-list",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"google_drive\",\n  \"operation\": \"list_files\",\n  \"params\": {\n    \"pageSize\": 10,\n    \"fields\": \"files(id,name),nextPageToken\"\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "teams-send",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"teams\",\n  \"operation\": \"send_message\",\n  \"params\": {\n    \"team_id\": \"REEMPLAZAR\",\n    \"channel_id\": \"REEMPLAZAR\",\n    \"content\": \"Aviso de equipo.\"\n  },\n  \"confirmed\": false,\n  \"idempotency_key\": \"CAMBIAR-POR-CLAVE-UNICA\"\n}"
+        }
+      }
+    },
+    {
+      "name": "github-list",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{gatewayKey}}"
+          },
+          {
+            "key": "X-Approval-Key",
+            "value": "{{approvalKey}}",
+            "disabled": true
+          }
+        ],
+        "url": "{{baseUrl}}/v1/execute",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"github\",\n  \"operation\": \"list_issues\",\n  \"params\": {\n    \"owner\": \"vladimiracunadev-create\",\n    \"repo\": \"universal-api-orchestrator\",\n    \"state\": \"open\"\n  }\n}"
+        }
+      }
+    }
+  ]
+}

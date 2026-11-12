@@ -1,0 +1,53 @@
+name: Capacidad
+description: Falta una operación, un proveedor o una función.
+labels: ["capacidad"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        La cobertura del proyecto es la matriz de conectores, no la totalidad de endpoints de cada plataforma.
+        Una petición con fuente oficial y caso de uso concreto se evalúa mucho más rápido.
+  - type: textarea
+    id: necesidad
+    attributes:
+      label: Qué necesita hacer
+      description: Descríbalo como tarea, no como implementación.
+      placeholder: "Listar las etiquetas de una conversación de Outlook para clasificarla antes de responder."
+    validations:
+      required: true
+  - type: input
+    id: proveedor
+    attributes:
+      label: Proveedor y operación
+      placeholder: "Microsoft Graph · GET /me/mailFolders/{id}/messageRules"
+    validations:
+      required: true
+  - type: input
+    id: fuente
+    attributes:
+      label: Documentación oficial
+      description: URL del endpoint en la documentación del proveedor.
+    validations:
+      required: true
+  - type: dropdown
+    id: efecto
+    attributes:
+      label: ¿Lee o modifica datos?
+      description: Una operación que modifica datos queda sujeta a las cuatro condiciones de escritura.
+      options: [Solo lectura, Modifica datos en el proveedor, No estoy seguro]
+    validations:
+      required: true
+  - type: textarea
+    id: limites
+    attributes:
+      label: Scopes, permisos o límites conocidos
+      description: Scopes OAuth, permisos de aplicación, cuotas, tamaños máximos o ventanas de tiempo.
+  - type: checkboxes
+    id: confirmaciones
+    attributes:
+      label: Confirmaciones
+      options:
+        - label: Revisé la matriz de conectores y la operación no está cubierta.
+          required: true
+        - label: Entiendo que una entrada nueva nace deshabilitada y requiere mi propia cuenta autorizada.
+          required: true

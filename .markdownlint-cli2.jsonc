@@ -1,0 +1,21 @@
+// Reglas de markdownlint para este repositorio.
+// La documentación es prosa en párrafos largos y tablas compactas: esas dos reglas
+// se desactivan a propósito, no por comodidad. Todo lo demás se mantiene activo.
+{
+  "config": {
+    "default": true,
+    // MD013: los párrafos no se parten a 80 columnas; el diff por frase es más legible.
+    "line-length": false,
+    // MD060: las tablas usan el estilo compacto `|---|---:|` ya presente en todo el repo.
+    "table-column-style": false,
+    // MD041: las plantillas de incidencia y de pull request empiezan por un encabezado de nivel 2.
+    "first-line-heading": false
+  },
+  "globs": ["**/*.md"],
+  "ignores": [
+    ".venv/**",
+    "node_modules/**",
+    // Documentación de la versión 0.1 conservada tal como se recibió.
+    "docs/history/**"
+  ]
+}

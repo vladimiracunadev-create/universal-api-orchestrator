@@ -1,0 +1,8 @@
+{
+  "system": "google_calendar",
+  "operation": "list_events",
+  "params": {
+    "calendar_id": "primary",
+    "maxResults": 10
+  }
+}

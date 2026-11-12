@@ -1,0 +1,8 @@
+{
+  "system": "outlook",
+  "operation": "list_messages",
+  "params": {
+    "$top": 5,
+    "$select": "id,subject,from"
+  }
+}

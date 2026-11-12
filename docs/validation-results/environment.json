@@ -1,0 +1,26 @@
+{
+  "date_utc": "2026-11-12",
+  "os": "Windows-11-10.0.26300-SP0",
+  "python": "3.12.9",
+  "packages": {
+    "fastapi": "0.162.5",
+    "uvicorn": "0.54.0",
+    "httpx": "0.28.1",
+    "pydantic": "2.14.3",
+    "pydantic-settings": "2.16.2",
+    "PyYAML": "6.0.3",
+    "jmespath": "1.1.0",
+    "jsonschema": "4.26.0",
+    "cryptography": "50.0.2",
+    "python-dotenv": "1.2.4",
+    "defusedxml": "0.7.1",
+    "google-auth-oauthlib": "1.5.0",
+    "msal": "1.39.0",
+    "pytest": "9.2.0",
+    "pytest-asyncio": "1.5.0",
+    "pytest-cov": "7.1.0",
+    "ruff": "0.17.5",
+    "bandit": "1.9.4",
+    "pip-audit": "2.10.1"
+  }
+}

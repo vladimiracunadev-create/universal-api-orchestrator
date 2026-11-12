@@ -1,0 +1,26 @@
+{
+  "description": "🔌 Universal API Orchestrator v0.3.0 · Gateway multicanal FastAPI: 13 servicios y 69 operaciones (Gmail, Graph, WhatsApp, Telegram, Slack, Twilio, SendGrid, Resend, Calendar, Drive, Teams, GitHub) sobre REST, GraphQL, SOAP y gRPC · OAuth cifrado, webhooks firmados, idempotencia reconciliable · consultar no autoriza enviar · 162 pruebas sin red 🐧🍎🪟",
+  "homepage": "https://github.com/vladimiracunadev-create/universal-api-orchestrator#readme",
+  "topics": [
+    "api-gateway",
+    "fastapi",
+    "python",
+    "oauth2",
+    "webhooks",
+    "integration",
+    "gmail-api",
+    "microsoft-graph",
+    "whatsapp-cloud-api",
+    "slack",
+    "telegram-bot",
+    "twilio",
+    "graphql",
+    "soap",
+    "grpc",
+    "idempotency",
+    "orchestration",
+    "sqlite",
+    "espanol",
+    "cross-platform"
+  ]
+}

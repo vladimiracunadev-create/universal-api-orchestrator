@@ -1,0 +1,9 @@
+{
+  "system": "github",
+  "operation": "list_issues",
+  "params": {
+    "owner": "vladimiracunadev-create",
+    "repo": "universal-api-orchestrator",
+    "state": "open"
+  }
+}

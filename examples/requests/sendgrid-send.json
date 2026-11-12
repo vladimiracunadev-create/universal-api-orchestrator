@@ -1,0 +1,12 @@
+{
+  "system": "sendgrid",
+  "operation": "send_mail",
+  "params": {
+    "from_email": "remitente@example.com",
+    "to_email": "cliente@example.com",
+    "subject": "Aviso",
+    "text": "Mensaje revisado."
+  },
+  "confirmed": false,
+  "idempotency_key": "CAMBIAR-POR-CLAVE-UNICA"
+}

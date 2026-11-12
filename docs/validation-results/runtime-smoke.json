@@ -1,0 +1,55 @@
+{
+  "date_utc": "2026-11-12",
+  "os": "Windows-11-10.0.26300-SP0",
+  "python": "3.12.9",
+  "process": "uvicorn real en 127.0.0.1; ningun proveedor externo contactado",
+  "note": "El catalogo incluye los 18 sistemas del repositorio mas demo_write, creado solo para comprobar la politica de escritura.",
+  "checks": {
+    "health_version": "0.3.0",
+    "health_request_id_header": true,
+    "security_headers": {
+      "cache-control": "no-store",
+      "x-content-type-options": "nosniff",
+      "referrer-policy": "no-referrer"
+    },
+    "echoes_client_request_id": true,
+    "catalog_without_key_401": true,
+    "catalog_systems": 19,
+    "catalog_without_secrets": true,
+    "system_detail_200": true,
+    "system_detail_unknown_404": true,
+    "disabled_system_error": "SYSTEM_DISABLED",
+    "unknown_system_error": "SYSTEM_NOT_FOUND",
+    "unknown_operation_error": "OPERATION_NOT_FOUND",
+    "write_blocked_without_allow_writes": "WRITE_APPROVAL_REQUIRED",
+    "ask_rejects_write": {
+      "item_0": "ASK_IS_READ_ONLY"
+    },
+    "state_counts": {
+      "events_pending": 0,
+      "events_acked": 0,
+      "requests_complete": 0,
+      "requests_pending_reconciliation": 0,
+      "tokens_stored": 0
+    },
+    "reconciliation_pending": [],
+    "release_without_approval_403": true,
+    "reload_without_approval_403": true,
+    "reload_with_approval": {
+      "reloaded": true,
+      "systems": 19
+    },
+    "openapi_paths": 13,
+    "unsigned_webhook_rejected_404_disabled_system": 404,
+    "rate_limit_codes": [
+      200,
+      200,
+      200,
+      429,
+      200,
+      429
+    ],
+    "rate_limit_triggered": true,
+    "health_exempt_from_rate_limit": true
+  }
+}

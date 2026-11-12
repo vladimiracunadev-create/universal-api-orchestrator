@@ -1,0 +1,11 @@
+{
+  "system": "twilio",
+  "operation": "send_message",
+  "params": {
+    "to": "+56900000000",
+    "from": "+10000000000",
+    "body": "Mensaje de prueba autorizado."
+  },
+  "confirmed": false,
+  "idempotency_key": "CAMBIAR-POR-CLAVE-UNICA"
+}

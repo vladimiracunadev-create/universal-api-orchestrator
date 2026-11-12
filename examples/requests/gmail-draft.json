@@ -1,0 +1,11 @@
+{
+  "system": "gmail",
+  "operation": "create_draft",
+  "params": {
+    "to": "cliente@example.com",
+    "subject": "Propuesta",
+    "text": "Borrador de propuesta."
+  },
+  "confirmed": false,
+  "idempotency_key": "CAMBIAR-POR-CLAVE-UNICA"
+}

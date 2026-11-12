@@ -1,0 +1,11 @@
+{
+  "system": "gmail",
+  "operation": "send_message",
+  "params": {
+    "to": "cliente@example.com",
+    "subject": "Respuesta a su consulta",
+    "text": "Contenido que debe revisar antes de enviar."
+  },
+  "confirmed": false,
+  "idempotency_key": "CAMBIAR-POR-CLAVE-UNICA"
+}

@@ -1,0 +1,10 @@
+{
+  "system": "telegram",
+  "operation": "send_message",
+  "params": {
+    "chat_id": "REEMPLAZAR",
+    "text": "Aviso operacional."
+  },
+  "confirmed": false,
+  "idempotency_key": "CAMBIAR-POR-CLAVE-UNICA"
+}
